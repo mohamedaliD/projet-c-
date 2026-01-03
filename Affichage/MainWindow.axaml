@@ -1,0 +1,222 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:Affichage"
+        xmlns:models="using:Affichage.Models"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="700"
+        x:Class="Affichage.MainWindow"
+        Title="Création de Personnage"
+        Width="480" Height="700"
+        CanResize="False"
+        Background="#1E1E1E" 
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.9"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#444"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="CaretBrush" Value="#800020"/> 
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#444"/>
+        </Style>
+        <Style Selector="TextBlock.StatLabel">
+            <Setter Property="Foreground" Value="#AAA"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="60"/>
+        </Style>
+        <Style Selector="Border.StatBox">
+            <Setter Property="Background" Value="#222"/>
+            <Setter Property="BorderBrush" Value="#444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto" Margin="25">
+        
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
+            <TextBlock Text="MES HÉROS" 
+                       FontSize="26" 
+                       FontWeight="Black" 
+                       Foreground="#A0153E" 
+                       HorizontalAlignment="Center"
+                       LetterSpacing="2"/>
+            <Separator Margin="100,10" Background="#800020" Height="2"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" 
+                Background="#2D2D2D" 
+                CornerRadius="8" 
+                Padding="15"
+                BorderBrush="#444"
+                BorderThickness="1">
+            <ScrollViewer>
+                <StackPanel>
+                    <StackPanel Name="EmptyMessageTxt" IsVisible="True" VerticalAlignment="Center" Margin="0,50,0,0">
+                        <TextBlock Text="∅" FontSize="40" HorizontalAlignment="Center" Foreground="#555"/>
+                        <TextBlock Text="La liste est vide" 
+                                   HorizontalAlignment="Center" 
+                                   Foreground="#777" 
+                                   FontStyle="Italic"
+                                   Margin="0,10,0,0"/>
+                    </StackPanel>
+
+                    <ItemsControl Name="CharactersList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:Personnage">
+                                <Border Background="#383838" 
+                                        Margin="0,0,0,12" 
+                                        Padding="12" 
+                                        CornerRadius="4"
+                                        BoxShadow="2 2 5 0 #20000000">
+                                    <Grid ColumnDefinitions="50, *, Auto">
+                                        <Border Grid.Column="0" 
+                                                Width="40" Height="40" 
+                                                CornerRadius="20" 
+                                                Background="#800020"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Nom[0]}" 
+                                                       Foreground="White" 
+                                                       VerticalAlignment="Center" 
+                                                       HorizontalAlignment="Center"
+                                                       FontWeight="Bold"/>
+                                        </Border>
+                                        
+                                        <StackPanel Grid.Column="1" Margin="15,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Nom}" 
+                                                       Foreground="White" 
+                                                       FontWeight="Bold" 
+                                                       FontSize="16"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <TextBlock Text="{Binding RaceInfo.Nom}" Foreground="#DDD" FontSize="12"/>
+                                                <TextBlock Text="-" Foreground="#777" FontSize="12"/>
+                                                <TextBlock Text="{Binding ClasseInfo.Nom}" Foreground="#BBB" FontSize="12"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Force, StringFormat='FOR: {0}'}" FontSize="10" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding Agilite, StringFormat='AGI: {0}'}" FontSize="10" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding Intel, StringFormat='INT: {0}'}" FontSize="10" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <StackPanel Grid.Row="2" Margin="0,20,0,0">
+            <Button Name="BtnCreate" 
+                    Content="NOUVEAU PERSONNAGE" 
+                    Click="OnCreateClick"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Background="#800020" 
+                    Foreground="White"/>
+
+            <Border Name="FormPanel" IsVisible="False" 
+                    Background="#333" 
+                    CornerRadius="8" 
+                    Padding="20"
+                    BorderBrush="#555"
+                    BorderThickness="1"
+                    Margin="0,-380,0,0" 
+                    BoxShadow="0 10 30 0 #000000"> 
+                
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Nouveau Héros" 
+                               Foreground="#DDD" 
+                               FontWeight="Bold" 
+                               HorizontalAlignment="Center"/>
+                    
+                    <TextBox Name="InputName" Watermark="Nom du personnage"/>
+
+                    <Grid ColumnDefinitions="*, 10, *">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Race" Foreground="#AAA" FontSize="11" Margin="0,0,0,2"/>
+                            <ComboBox Name="ComboRace" PlaceholderText="..." SelectionChanged="OnRaceChanged"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Classe" Foreground="#AAA" FontSize="11" Margin="0,0,0,2"/>
+                            <ComboBox Name="ComboClass" PlaceholderText="..." IsEnabled="False"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Background="#444" Height="1" Margin="0,5"/>
+
+                    <TextBlock Text="Attributs (Dés + Bonus racial)" Foreground="#AAA" FontSize="12" FontWeight="Bold"/>
+                    
+                    <Button Content="🎲 Lancer les dés" 
+                            Click="OnRollDiceClick"
+                            Background="#444" Foreground="White"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                    <Grid ColumnDefinitions="*, 10, *" RowDefinitions="Auto, Auto">
+                        <Border Grid.Row="0" Grid.Column="0" Classes="StatBox">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="FORCE" Classes="StatLabel"/>
+                                <TextBlock Name="TxtForce" Text="0" FontWeight="Bold" Foreground="#FF6B6B"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="2" Classes="StatBox">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="AGI" Classes="StatLabel"/>
+                                <TextBlock Name="TxtAgilite" Text="0" FontWeight="Bold" Foreground="#4ECDC4"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="0" Classes="StatBox">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="INTEL" Classes="StatLabel"/>
+                                <TextBlock Name="TxtIntel" Text="0" FontWeight="Bold" Foreground="#45B7D1"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="2" Classes="StatBox">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="VIG" Classes="StatLabel"/>
+                                <TextBlock Name="TxtVigueur" Text="0" FontWeight="Bold" Foreground="#FFE66D"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*, *" Margin="0,15,0,0">
+                        <Button Grid.Column="0" Content="Annuler" Click="OnCancelClick" 
+                                Background="Transparent" Foreground="#AAA"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                Margin="0,0,5,0"/>
+                        <Button Grid.Column="1" Content="Valider" Click="OnValidateClick" 
+                                Background="#800020" Foreground="White"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                Margin="5,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>
