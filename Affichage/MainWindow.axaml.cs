@@ -1,150 +1,110 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Affichage.Models; 
+using System.Linq;
+using Affichage.Models;
 
 namespace Affichage
 {
     public partial class MainWindow : Window
     {
-        public ObservableCollection<Personnage> MesPersos { get; set; }
+        public ObservableCollection<Personnage> MesPersos { get; set; } = new();
+        private List<Race> _toutesLesRaces = new();
+        private List<Classe> _toutesLesClasses = new();
         
-        private List<Race> _racesDisponibles;
-        private Random _rnd = new Random();
+        private int _pointsRestants = 0;
+        private int _tempFor = 0, _tempDex = 0, _tempInt = 0;
 
         public MainWindow()
         {
             InitializeComponent();
-            MesPersos = new ObservableCollection<Personnage>();
             CharactersList.ItemsSource = MesPersos;
-
-            InitializeGameData();
-
-            ComboRace.ItemsSource = _racesDisponibles;
+            InitialiserDonnees();
+            ComboRace.ItemsSource = _toutesLesRaces;
         }
 
-        private void InitializeGameData()
+        private void InitialiserDonnees()
         {
-            Classe guerrier = new Classe("Guerrier");
-            Classe mage = new Classe("Mage");
-            Classe voleur = new Classe("Voleur");
-            Classe paladin = new Classe("Paladin");
-            Classe rodeur = new Classe("Rôdeur");
-            Classe druide = new Classe("Druide");
-            Classe forgeron = new Classe("Forgeron");
-            Classe barbare = new Classe("Barbare");
-            Classe chaman = new Classe("Chaman");
+            _toutesLesClasses = new List<Classe> {
+                new Classe("Guerrier", Competence.Resistance),
+                new Classe("Mage", Competence.Precision),
+                new Classe("Voleur", Competence.Rapidite)
+            };
 
-           
-            Race humain = new Race("Humain", 1, 1, 1, 1);
-            humain.ClassesAccessibles.AddRange(new[] { guerrier, mage, voleur, paladin });
-
-            Race elfe = new Race("Elfe", 0, 1, 2, 0);
-            elfe.ClassesAccessibles.AddRange(new[] { mage, rodeur, druide, voleur });
-
-            Race nain = new Race("Nain", 1, 0, 0, 2);
-            nain.ClassesAccessibles.AddRange(new[] { guerrier, paladin, forgeron }); // Pas de Mage !
-
-            Race orc = new Race("Orc", 2, 0, 0, 1);
-            orc.ClassesAccessibles.AddRange(new[] { guerrier, barbare, chaman });
-
-            _racesDisponibles = new List<Race> { humain, elfe, nain, orc };
+            _toutesLesRaces = new List<Race> {
+                new Race("Nain", 2, 0, 0, _toutesLesClasses[1]),
+                new Race("Elfe", 0, 2, 1, _toutesLesClasses[0]),
+                new Race("Humain", 1, 1, 1, _toutesLesClasses[2])
+            };
         }
 
-
-        private void OnCreateClick(object sender, RoutedEventArgs e)
+        private void OnLancerDeClick(object sender, RoutedEventArgs e)
         {
-            BtnCreate.IsVisible = false;
-            FormPanel.IsVisible = true;
-            InputName.Focus();
+            _pointsRestants = new Random().Next(1, 11);
+            _tempFor = 0; _tempDex = 0; _tempInt = 0;
+            RafraichirStatsUI();
         }
 
-        private void OnRaceChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ComboRace.SelectedItem is Race raceChoisie)
-            {
-                ComboClass.ItemsSource = raceChoisie.ClassesAccessibles;
-                ComboClass.IsEnabled = true;
-                ComboClass.SelectedIndex = 0;
+        // --- GESTION DES POINTS (+) ---
+        private void OnAddForce(object sender, RoutedEventArgs e) { if(_pointsRestants > 0) { _tempFor++; _pointsRestants--; RafraichirStatsUI(); } }
+        private void OnAddDex(object sender, RoutedEventArgs e) { if(_pointsRestants > 0) { _tempDex++; _pointsRestants--; RafraichirStatsUI(); } }
+        private void OnAddInt(object sender, RoutedEventArgs e) { if(_pointsRestants > 0) { _tempInt++; _pointsRestants--; RafraichirStatsUI(); } }
 
-                if (TxtForce.Text != "0") OnRollDiceClick(null, null);
-            }
+        // --- GESTION DES POINTS (-) ---
+        private void OnRemoveForce(object sender, RoutedEventArgs e) { if(_tempFor > 0) { _tempFor--; _pointsRestants++; RafraichirStatsUI(); } }
+        private void OnRemoveDex(object sender, RoutedEventArgs e) { if(_tempDex > 0) { _tempDex--; _pointsRestants++; RafraichirStatsUI(); } }
+        private void OnRemoveInt(object sender, RoutedEventArgs e) { if(_tempInt > 0) { _tempInt--; _pointsRestants++; RafraichirStatsUI(); } }
+
+        private void RafraichirStatsUI()
+        {
+            TxtPointsRestants.Text = _pointsRestants.ToString();
+            TxtFor.Text = _tempFor.ToString();
+            TxtDex.Text = _tempDex.ToString();
+            TxtInt.Text = _tempInt.ToString();
+
+            // Indicateur visuel : le bouton devient vert quand on peut valider (0 points restants)
+            if (_pointsRestants == 0 && (_tempFor > 0 || _tempDex > 0 || _tempInt > 0))
+                BtnValider.Background = Brushes.Green;
             else
-            {
-                ComboClass.ItemsSource = null;
-                ComboClass.IsEnabled = false;
+                BtnValider.Background = new SolidColorBrush(Color.Parse("#800020"));
+        }
+
+        private void OnRaceSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboRace.SelectedItem is Race r) {
+                ComboClasse.ItemsSource = _toutesLesClasses.Where(c => !r.ClassesInterdites.Any(i => i.Nom == c.Nom)).ToList();
+                ComboClasse.IsEnabled = true;
+                ComboClasse.SelectedIndex = 0;
             }
         }
 
-        private void OnRollDiceClick(object sender, RoutedEventArgs e)
+        private void OnValiderCreationClick(object sender, RoutedEventArgs e)
         {
-            int force = _rnd.Next(5, 19);
-            int agi = _rnd.Next(5, 19);
-            int intel = _rnd.Next(5, 19);
-            int vig = _rnd.Next(5, 19);
+            if (string.IsNullOrWhiteSpace(InputNom.Text) || ComboRace.SelectedItem == null || _pointsRestants > 0) return;
 
-            if (ComboRace.SelectedItem is Race race)
-            {
-                force += race.BonusForce;
-                agi += race.BonusAgilite;
-                intel += race.BonusIntel;
-                vig += race.BonusVigueur;
-            }
-
-            // 3. Affichage
-            TxtForce.Text = force.ToString();
-            TxtAgilite.Text = agi.ToString();
-            TxtIntel.Text = intel.ToString();
-            TxtVigueur.Text = vig.ToString();
+            var p = new Personnage {
+                Nom = InputNom.Text,
+                RaceChoisie = ComboRace.SelectedItem as Race,
+                ClasseChoisie = ComboClasse.SelectedItem as Classe,
+                StatForce = _tempFor, StatDexterite = _tempDex, StatIntelligence = _tempInt
+            };
+            p.AppliquerBonusRaciaux();
+            MesPersos.Add(p);
+            ReinitialiserFormulaire();
         }
 
-        private void OnValidateClick(object sender, RoutedEventArgs e)
+        private void OnOuvrirFormulaireClick(object sender, RoutedEventArgs e) { FormPanel.IsVisible = true; BtnOuvrirFormulaire.IsVisible = false; }
+        private void OnAnnulerClick(object sender, RoutedEventArgs e) => ReinitialiserFormulaire();
+
+        private void ReinitialiserFormulaire()
         {
-            string nom = InputName.Text ?? "";
-            Race? race = ComboRace.SelectedItem as Race;
-            Classe? classe = ComboClass.SelectedItem as Classe;
-
-            int.TryParse(TxtForce.Text, out int f);
-            int.TryParse(TxtAgilite.Text, out int a);
-            int.TryParse(TxtIntel.Text, out int i);
-            int.TryParse(TxtVigueur.Text, out int v);
-
-            if (string.IsNullOrWhiteSpace(nom) || race == null || classe == null) return;
-
-            if (f == 0)
-            {
-                OnRollDiceClick(null, null);
-                int.TryParse(TxtForce.Text, out f);
-                int.TryParse(TxtAgilite.Text, out a);
-                int.TryParse(TxtIntel.Text, out i);
-                int.TryParse(TxtVigueur.Text, out v);
-            }
-
-            MesPersos.Add(new Personnage 
-            { 
-                Nom = nom, 
-                RaceInfo = race, 
-                ClasseInfo = classe,
-                Force = f, Agilite = a, Intel = i, Vigueur = v
-            });
-            
-            EmptyMessageTxt.IsVisible = false;
-            ResetForm();
-        }
-
-        private void OnCancelClick(object sender, RoutedEventArgs e) => ResetForm();
-
-        private void ResetForm()
-        {
-            InputName.Text = "";
-            ComboRace.SelectedIndex = -1;
-            ComboClass.SelectedIndex = -1;
-            ComboClass.IsEnabled = false;
-            TxtForce.Text = "0"; TxtAgilite.Text = "0"; TxtIntel.Text = "0"; TxtVigueur.Text = "0";
-            FormPanel.IsVisible = false;
-            BtnCreate.IsVisible = true;
+            InputNom.Text = ""; _pointsRestants = 0; _tempFor = 0; _tempDex = 0; _tempInt = 0;
+            RafraichirStatsUI();
+            FormPanel.IsVisible = false; BtnOuvrirFormulaire.IsVisible = true;
+            EmptyMessageTxt.IsVisible = MesPersos.Count == 0;
         }
     }
 }

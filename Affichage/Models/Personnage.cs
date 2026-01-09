@@ -1,15 +1,25 @@
+using System.Collections.Generic;
+
 namespace Affichage.Models
 {
     public class Personnage
     {
-        public string Nom { get; set; } = "";
+        public string Nom { get; set; } = string.Empty;
+        public Race? RaceChoisie { get; set; }
+        public Classe? ClasseChoisie { get; set; }
         
-        public Race? RaceInfo { get; set; } 
-        public Classe? ClasseInfo { get; set; }
+        public int StatForce { get; set; }
+        public int StatDexterite { get; set; }
+        public int StatIntelligence { get; set; }
 
-        public int Force { get; set; }
-        public int Agilite { get; set; }
-        public int Intel { get; set; }
-        public int Vigueur { get; set; }
+        public void AppliquerBonusRaciaux()
+        {
+            if (RaceChoisie != null)
+            {
+                StatForce += RaceChoisie.BonusForce;
+                StatDexterite += RaceChoisie.BonusDexterite;
+                StatIntelligence += RaceChoisie.BonusIntelligence;
+            }
+        }
     }
 }
