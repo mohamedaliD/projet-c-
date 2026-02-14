@@ -26,6 +26,7 @@
             <ScrollViewer>
                 <StackPanel>
                     <TextBlock Name="EmptyMessageTxt" Text="Aucun héros créé" HorizontalAlignment="Center" Foreground="#777" Margin="0,50,0,0"/>
+                    
                     <ItemsControl Name="CharactersList">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="models:Personnage">

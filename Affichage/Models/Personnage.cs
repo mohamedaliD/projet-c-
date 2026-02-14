@@ -12,6 +12,10 @@ namespace Affichage.Models
         public int StatDexterite { get; set; }
         public int StatIntelligence { get; set; }
 
+        // Nouvelles propriétés pour l'inventaire et l'image
+        public List<Item> Inventaire { get; set; } = new();
+        public string CheminImageAvatar { get; set; } = string.Empty;
+
         public void AppliquerBonusRaciaux()
         {
             if (RaceChoisie != null)

@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:Affichage.Models"
+        x:Class="Affichage.FicheWindow"
+        Title="Fiche de Personnage" Width="500" Height="700"
+        Background="#1E1E1E" WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="*, Auto" Margin="20">
+        <Border Grid.Row="0" Name="ZoneAExporter" Background="#2D2D2D" CornerRadius="10" Padding="20">
+            <StackPanel Spacing="15">
+                
+                <Grid ColumnDefinitions="100, *">
+                    <Border Grid.Column="0" Width="90" Height="90" CornerRadius="45" Background="#800020" ClipToBounds="True">
+                        <Image Name="AvatarImage" Stretch="UniformToFill"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="15,0,0,0">
+                        <TextBlock Name="TxtNom" FontSize="28" FontWeight="Black" Foreground="White"/>
+                        <TextBlock Name="TxtRaceClasse" FontSize="16" Foreground="#AAA" FontStyle="Italic"/>
+                    </StackPanel>
+                </Grid>
+                
+                <Separator Background="#555" Height="1"/>
+
+                <TextBlock Text="STATISTIQUES" FontWeight="Bold" Foreground="#A0153E"/>
+                <Grid ColumnDefinitions="*, *, *">
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <TextBlock Text="FORCE" Foreground="#FF4D4D" FontSize="12"/>
+                        <TextBlock Name="TxtForce" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <TextBlock Text="DEXTÉRITÉ" Foreground="#4DFF4D" FontSize="12"/>
+                        <TextBlock Name="TxtDex" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <TextBlock Text="INTELLIGENCE" Foreground="#4D4DFF" FontSize="12"/>
+                        <TextBlock Name="TxtInt" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Background="#555" Height="1"/>
+
+                <TextBlock Text="INVENTAIRE DE DÉPART" FontWeight="Bold" Foreground="#A0153E"/>
+                <ItemsControl Name="InventaireList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Item">
+                            <Border Background="#383838" Margin="0,3" Padding="10" CornerRadius="5">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="•" Foreground="#800020" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Nom}" Foreground="White" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding NiveauRarete}" Foreground="#AAA" FontStyle="Italic" FontSize="12" VerticalAlignment="Bottom"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15" Margin="0,20,0,0">
+            <Button Content="Importer Image" Click="OnImporterImageClick" Background="#444" Foreground="White" Padding="10"/>
+            <Button Content="Exporter Fiche" Click="OnExporterFicheClick" Background="#800020" Foreground="White" Padding="10" FontWeight="Bold"/>
+        </StackPanel>
+    </Grid>
+</Window>
