@@ -9,6 +9,7 @@ namespace Affichage.Models
         public Potion(string nom, Rarete rarete, int soin, int degat, int duree)
         {
             Nom = nom;
+            
             NiveauRarete = rarete;
             PointsDeSoin = soin;
             PointsDeDegat = degat;

@@ -13,6 +13,7 @@ namespace Affichage.Models
         public Race(string nom, int bForce, int bDex, int bInt, Classe classeNonAutorisee)
         {
             Nom = nom;
+            
             BonusForce = bForce;
             BonusDexterite = bDex;
             BonusIntelligence = bInt;

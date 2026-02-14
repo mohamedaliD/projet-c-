@@ -10,6 +10,7 @@ namespace Affichage.Models
         public Classe(string nom, Competence competenceParDefaut)
         {
             Nom = nom;
+            
             CompetencesInitiales = new List<Competence> { competenceParDefaut };
         }
 

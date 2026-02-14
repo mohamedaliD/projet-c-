@@ -7,6 +7,7 @@ namespace Affichage.Models
         public Arme(string nom, Rarete rarete, int degats)
         {
             Nom = nom;
+            
             NiveauRarete = rarete;
             ValeurDegats = degats;
         }
